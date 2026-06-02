@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>惊喜盲盒｜输错密码变小猪</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "微软雅黑", sans-serif;
+        }
+        body {
+            min-height: 100vh;
+            background: linear-gradient(145deg, #222738, #383e56);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        .box-wrap {
+            cursor: pointer;
+            width: 180px;
+            height: 180px;
+            background: linear-gradient(#ff7b9c, #ff477e);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 30px rgba(255,70,126,0.4);
+            transition: all 0.3s ease;
+        }
+        .box-wrap:hover {
+            transform: scale(1.08);
+        }
+        .box-text {
+            font-size: 32px;
+            color: #fff;
+            font-weight: bold;
+        }
+        .tip {
+            color: #eee;
+            margin: 30px 0;
+            font-size: 18px;
+        }
+        .msg-box {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #fff;
+            padding: 35px 50px;
+            border-radius: 14px;
+            font-size: 26px;
+            font-weight: bold;
+            color: #ff477e;
+            box-shadow: 0 0 50px rgba(255,80,130,0.3);
+            display: none;
+            z-index: 99;
+            animation: pop 0.4s;
+            white-space: nowrap;
+        }
+        @keyframes pop {
+            0%{transform:translate(-50%,-50%) scale(0)}
+            100%{transform:translate(-50%,-50%) scale(1)}
+        }
+        .heart {
+            position: absolute;
+            font-size: 24px;
+            color: #ff7b9c;
+            animation: heartFall linear forwards;
+        }
+        @keyframes heartFall {
+            0%{top:-5%;opacity:1}
+            100%{top:105%;opacity:0}
+        }
+
+        .firework {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            animation: firework-fly 1.5s forwards;
+        }
+        @keyframes firework-fly {
+            0% { transform: translateY(0); opacity: 1; }
+            100% { transform: translateY(-800px); opacity: 0; }
+        }
+
+        .final-text {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 60px;
+            font-weight: bold;
+            color: #ff477e;
+            text-shadow: 0 0 20px #ff99bd;
+            z-index: 999;
+            display: none;
+            animation: bigPop 1s forwards;
+        }
+        @keyframes bigPop {
+            0%{transform:translate(-50%,-50%) scale(0); opacity:0}
+            100%{transform:translate(-50%,-50%) scale(1); opacity:1}
+        }
+    </style>
+</head>
+<body>
+    <div class="tip">连续点击盲盒，最后一步需要输入密码解锁！</div>
+    <div class="box-wrap" id="box">
+        <div class="box-text">🎁点我开盒</div>
+    </div>
+    <div class="msg-box" id="msg"></div>
+    <div class="final-text" id="final">我想你了</div>
+
+<script>
+    const contentList = [
+		"在期待吗？",
+		"猜一下会有什么？",
+		"啥也没有",
+		"还是没有",
+        "别点啦，真没东西",
+        "最后一次机会！请输入终极密码"
+    ];
+
+    let count = 0;
+    const box = document.getElementById('box');
+    const msgDom = document.getElementById('msg');
+    const finalDom = document.getElementById('final');
+
+    function createHeart() {
+        let h = document.createElement('div');
+        h.className = 'heart';
+        h.innerHTML = '❤';
+        h.style.left = Math.random() * 100 + 'vw';
+        h.style.fontSize = Math.random() * 20 + 15 + 'px';
+        h.style.animationDuration = Math.random() * 3 + 2 + 's';
+        document.body.appendChild(h);
+        setTimeout(() => h.remove(), 5000);
+    }
+
+    function createFireworks() {
+        const colors = ['#ff5e8d', '#ffc436', '#4dccff', '#7aff97', '#ff87ab'];
+        for (let i = 0; i < 120; i++) {
+            let fire = document.createElement('div');
+            fire.className = 'firework';
+            fire.style.background = colors[Math.floor(Math.random() * colors.length)];
+            fire.style.left = Math.random() * 100 + 'vw';
+            fire.style.bottom = '0';
+            fire.style.animationDuration = Math.random() * 1 + 0.8 + 's';
+            document.body.appendChild(fire);
+            setTimeout(() => fire.remove(), 2000);
+        }
+    }
+
+    box.onclick = function () {
+        if (count >= 4) {
+            let pwd = prompt("请输入终极密码：");
+            if (pwd === "我爱你") {
+                msgDom.style.display = "none";
+                finalDom.style.display = "block";
+                createFireworks();
+                for (let i = 0; i < 50; i++) createHeart();
+                box.innerHTML = "<div class='box-text'>解锁成功❤️</div>";
+            } else {
+                // 输错密码直接弹出：你是猪嘛
+                msgDom.innerText = "胡成龙，你是猪嘛？居然猜不对";
+                msgDom.style.display = "block";
+                setTimeout(() => { msgDom.style.display = 'none' }, 2000);
+            }
+            return;
+        }
+
+        msgDom.innerText = contentList[count];
+        msgDom.style.display = 'block';
+        setTimeout(() => { msgDom.style.display = 'none' }, 2200);
+        
+        for (let i = 0; i < 12; i++) createHeart();
+        count++;
+    };
+</script>
+</body>
+</html>
